@@ -1,0 +1,12 @@
+{
+  "bundles": [
+    {"name":"liquibase/i18n/liquibase-core"},
+    {"name": "com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages"},
+    {"name": "com.sun.org.apache.xerces.internal.impl.xpath.regex.message"}
+  ],
+  "resources":[
+    {"pattern": ".*properties$" },
+    {"pattern": "www.liquibase.org/xml/ns/.*$"},
+    {"pattern":"liquibase/i18n/liquibase-commandline-helptext.xml"}
+  ]
+}

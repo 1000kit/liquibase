@@ -1,0 +1,36 @@
+name: build
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MAVEN_CLI_OPTS: "--batch-mode"
+  GRAALVM_VER: 19.2.1
+  GRAALVM_HOME: .graalvm
+  JAVA_HOME: .graalvm
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Install graalvm
+      run: |
+        curl https://github.com/oracle/graal/releases/download/vm-$GRAALVM_VER/graalvm-ce-linux-amd64-$GRAALVM_VER.tar.gz -O -J -L && tar xfz graalvm-ce-linux-amd64-$GRAALVM_VER.tar.gz && mv graalvm-ce-$GRAALVM_VER $GRAALVM_HOME && rm graalvm-ce-linux-amd64-$GRAALVM_VER.tar.gz
+        $GRAALVM_HOME/bin/gu install native-image
+    - name: Set build version
+      run: ./mvnw $MAVEN_CLI_OPTS semver-release:version-git-hash
+    - name: Maven Build
+      run: ./mvnw $MAVEN_CLI_OPTS clean package -Pnative
+      
