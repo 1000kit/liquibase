@@ -10,7 +10,8 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MAVEN_CLI_OPTS: "--batch-mode"
-  GRAALVM_VER: 19.2.1
+  GRAALVM_VER: 19.3.1
+  GRAALVM_JAVA: java11
   GRAALVM_HOME: .graalvm
   JAVA_HOME: .graalvm
 
@@ -27,8 +28,10 @@ jobs:
           ${{ runner.os }}-maven-
     - name: Install graalvm
       run: |
-        curl https://github.com/oracle/graal/releases/download/vm-$GRAALVM_VER/graalvm-ce-linux-amd64-$GRAALVM_VER.tar.gz -O -J -L && tar xfz graalvm-ce-linux-amd64-$GRAALVM_VER.tar.gz && mv graalvm-ce-$GRAALVM_VER $GRAALVM_HOME && rm graalvm-ce-linux-amd64-$GRAALVM_VER.tar.gz
+        curl https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAALVM_VER/graalvm-ce-$GRAALVM_JAVA-linux-amd64-$GRAALVM_VER.tar.gz -O -J -L && tar xfz graalvm-ce-$GRAALVM_JAVA-linux-amd64-$GRAALVM_VER.tar.gz
+        mv graalvm-ce-$GRAALVM_JAVA-$GRAALVM_VER $GRAALVM_HOME
         $GRAALVM_HOME/bin/gu install native-image
+        rm *.tar.gz
     - name: Set build version
       run: ./mvnw $MAVEN_CLI_OPTS semver-release:version-git-hash
     - name: Maven Build

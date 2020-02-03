@@ -73,15 +73,15 @@ import java.util.*;
 final class Target_LocalizationSupport {
 
     @Alias
-    protected Map<String, ResourceBundle> cache;
+    protected Map<String, ResourceBundle> resourceBundles;
 
     @Substitute
     public ResourceBundle getCached(String baseName, Locale locale) throws MissingResourceException {
-        ResourceBundle result = cache.get(baseName);
+        ResourceBundle result = resourceBundles.get(baseName);
         if (result == null && JdkSubstitutions.BUNDLE_NAME.equals(baseName)) {
             try (InputStream in = Target_LocalizationSupport.class.getResourceAsStream(JdkSubstitutions.BUNDLE_FILE)) {
-                cache.put(baseName, XMLResourceBundleFactory.create(in));
-                return cache.get(baseName);
+                resourceBundles.put(baseName, XMLResourceBundleFactory.create(in));
+                return resourceBundles.get(baseName);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -139,7 +139,7 @@ final class Target_ServiceLocator {
         LogService.getLog(Target_ServiceLocator.class).info(LogType.LOG, "Loading the service interface " + requiredInterface);
         if (liquibase.license.LicenseService.class.equals(requiredInterface)) {
             return new Class[]{
-                    kp.class
+//                    kp.class
             };
         }
         if (liquibase.diff.compare.DatabaseObjectComparator.class.equals(requiredInterface)) {
